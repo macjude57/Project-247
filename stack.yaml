@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A sample template
+Resources:
+  dellVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+       - Key: Name
+         Value: Dell-Vpc
+
+  dellInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value: Dell-Igw
+
+  dellAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+         Ref: dellVPC
+      InternetGatewayId:
+         Ref: dellInternetGateway 
+
+  publicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref dellVPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: "us-east-2b"
+      Tags:
+      - Key: Name
+        Value: PublicSubnet 
+
+  privateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref dellVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: "us-east-2b"
+      Tags:
+      - Key: Name
+        Value: Privatesubnet 
+
+  publicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: dellVPC
+      Tags:
+      - Key: Name
+        Value: PublicRouteTable
+
+  privateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: dellVPC
+      Tags:
+      - Key: Name
+        Value: PrivateRouteTable
+
+  publicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: publicSubnet
+      RouteTableId:
+        Ref: publicRouteTable 
+
+  privateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: privateSubnet
+      RouteTableId:
+        Ref: privateRouteTable                             
